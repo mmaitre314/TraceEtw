@@ -1,0 +1,4 @@
+TraceEtw
+========
+
+High-performance tracing for C++ Windows/Windows Phone Store apps
