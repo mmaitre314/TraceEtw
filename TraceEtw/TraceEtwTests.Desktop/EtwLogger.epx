@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EventProvider
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://mmaitre314.github.io/EventProvider.xsd"
+  Name="MMaitre-TraceEtw" 
+  Guid="{A006BF16-179A-4BDF-A0A2-917AC6CA98D6}"
+  >
+  
+  <Event Name="Trace" Level="Verbose">
+    <Arg Type="AnsiString" Name="Message" />
+  </Event>
+    
+  <Event Name="Error" Level="Error">
+    <Arg Type="AnsiString" Name="Message" />
+  </Event>
+  
+  <Task Name="Op" Level="Informational">
+    <Start>
+      <Arg Type="Pointer" Name="Object" />
+    </Start>
+    <Stop>
+      <Arg Type="Pointer" Name="Object" />
+      <Arg Type="Int32" Name="HResult" />
+    </Stop>
+  </Task>
+  
+  <Event Name="TraceVarArgsAnsi">
+    <VarArgs Type="AnsiString" Name="Message" />
+  </Event>
+
+  <Event Name="TraceVarArgsUnicode">
+    <VarArgs Type="UnicodeString" Name="Message" />
+  </Event>
+
+  <Event Name="Marker" />
+
+  <Task Name="MarkerOp" >
+    <Start />
+    <Stop />
+  </Task>
+
+  <Task Name="MarkerOp2">
+    <Start />
+    <Stop>
+      <Arg Type="Guid" Name="Result" />
+    </Stop>
+  </Task>
+
+  <Event Name="ManyArgs" Level="Warning">
+    <Arg Type="Boolean" Name="A" />
+    <Arg Type="Int8" Name="B"/>
+    <Arg Type="UInt8" Name="C" />
+    <Arg Type="Int16" Name="D" />
+    <Arg Type="UInt16" Name="E" />
+    <Arg Type="Int32" Name="F" />
+    <Arg Type="UInt32" Name="G" />
+    <Arg Type="Int64" Name="H" />
+    <Arg Type="UInt64" Name="I" />
+    <Arg Type="Float" Name="J" />
+    <Arg Type="Double" Name="K" />
+    <Arg Type="Guid" Name="L" />
+    <Arg Type="Pointer" Name="M" />
+    <Arg Type="AnsiString" Name="N" />
+    <Arg Type="UnicodeString" Name="O" />
+  </Event>
+
+</EventProvider>
+

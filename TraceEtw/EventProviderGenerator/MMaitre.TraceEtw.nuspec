@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>MMaitre.TraceEtw</id>
+    <title>ETW Tracing</title>
+    <version>$NuGetVersion$</version>
+    <authors>Matthieu Maitre</authors>
+    <owners>Matthieu Maitre</owners>
+    <licenseUrl>https://raw.githubusercontent.com/mmaitre314/TraceEtw/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/mmaitre314/TraceEtw</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>High-performance tracing for C++ Windows/Windows Phone Store apps.</summary>
+    <description>Simplified Event Tracing for Windows (ETW) in Windows/Windows Phone Store apps. Traces can be either structured or unstructured. For documentation see https://github.com/mmaitre314/TraceEtw .</description>
+    <copyright>Copyright © 2014, Matthieu Maitre. All rights reserved.</copyright>
+    <tags>Native WinRT ETW Tracing</tags>
+  </metadata>
+  <files>
+    <file src="MMaitre.TraceEtw.targets" target="build\native\" />
+    <file src="EventProvider.xml" target="build\native\" />
+    <file src="bin\Release\EventProviderGenerator.dll" target="build\native\" />
+  </files>
+</package>

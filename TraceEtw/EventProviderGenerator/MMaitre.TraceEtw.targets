@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)EventProvider.xml" />
+    <AvailableItemName Include="EventProvider">
+      <Targets>GenerateEventProvider</Targets>
+    </AvailableItemName>
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <CompileDependsOn>$(CompileDependsOn);GenerateEventProvider</CompileDependsOn>
+    <CleanDependsOn>$(CleanDependsOn);CleanEventProvider</CleanDependsOn>
+  </PropertyGroup>
+
+  <UsingTask TaskName="EventProviderGenerator.GenerateEventProvider"
+             AssemblyFile="$(MSBuildThisFileDirectory)EventProviderGenerator.dll"/>
+
+  <Target Name="GenerateEventProvider"
+          BeforeTargets="ClCompile"
+          Inputs="@(EventProvider)"
+          Outputs="@(EventProvider -> '$(ProjectDir)Events\%(Filename).man');@(EventProvider -> '$(ProjectDir)Events\%(Filename)Base.h');@(EventProvider -> '$(ProjectDir)Events\%(Filename).h')"
+          >
+    <Message Importance="high" Text="Processing %(EventProvider.Filename).epx" />
+    <ItemGroup>
+      <ClInclude Include="$(ProjectDir)Events\%(EventProvider.Filename)Base.h" />
+      <ClInclude Include="$(ProjectDir)Events\%(EventProvider.Filename).h" />
+      <EventProviderTemporaryFiles Include="$(ProjectDir)Events\*.bin" />
+      <EventProviderTemporaryFiles Include="$(ProjectDir)Events\*.rc" />
+    </ItemGroup>
+    <GenerateEventProvider  InputXmlPath="%(EventProvider.FullPath)"
+                            WindowsSDK_ExecutablePath="$(WindowsSDK_ExecutablePath)"
+                            OutputDir="$(ProjectDir)Events\"
+                            Verbose="%(EventProvider.Verbose)"
+                            />
+    <Delete Files="@(EventProviderTemporaryFiles)"/>
+  </Target>
+
+  <Target Name="CleanEventProvider" BeforeTargets="Clean">
+    <RemoveDir Directories="$(ProjectDir)Events\" />
+  </Target>
+
+</Project>

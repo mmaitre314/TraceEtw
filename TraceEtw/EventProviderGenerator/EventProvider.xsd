@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- For definitions of values and types see \Windows Kits\8.1\Include\um\winmeta.xml -->
+
+  <xs:simpleType name="Guid">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})|(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Level">
+    <xs:annotation>
+      <xs:documentation>
+        Default: Informational.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Error" />
+      <xs:enumeration value="Warning" />
+      <xs:enumeration value="Informational" />
+      <xs:enumeration value="Verbose" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Boolean" />
+      <xs:enumeration value="Int8" />
+      <xs:enumeration value="UInt8" />
+      <xs:enumeration value="Int16" />
+      <xs:enumeration value="UInt16" />
+      <xs:enumeration value="Int32" />
+      <xs:enumeration value="UInt32" />
+      <xs:enumeration value="Int64" />
+      <xs:enumeration value="UInt64" />
+      <xs:enumeration value="Float" />
+      <xs:enumeration value="Double" />
+      <xs:enumeration value="Guid" />
+      <xs:enumeration value="Pointer" />
+      <xs:enumeration value="AnsiString" />
+      <xs:enumeration value="UnicodeString" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="String">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="AnsiString" />
+      <xs:enumeration value="UnicodeString" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="Arg">
+    <xs:attribute name="Type" type="Type" use="required"/>
+    <xs:attribute name="Name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="VarArgs">
+    <xs:attribute name="Type" type="String" use="required"/>
+    <xs:attribute name="Name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="EventProvider">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+
+        <xs:element name="Event" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:choice>
+              <xs:sequence>
+                <xs:element name="Arg" type="Arg" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+              <xs:element name="VarArgs" type="VarArgs" minOccurs="0" maxOccurs="1"/>
+            </xs:choice>
+            <xs:attribute name="Name" type="xs:string" use="required"/>
+            <xs:attribute name="Level" type="Level" use="optional" default="Informational"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Task" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>
+              An event with a beginning and an end.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+
+              <xs:element name="Start" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Arg" type="Arg" minOccurs="0" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element name="Stop" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Arg" type="Arg" minOccurs="0" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+
+            </xs:sequence>
+            <xs:attribute name="Name" type="xs:string" use="required"/>
+            <xs:attribute name="Level" type="Level" use="optional" default="Informational"/>
+          </xs:complexType>
+        </xs:element>
+
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="Name" type="xs:string" use="required"/>
+    <xs:attribute name="Guid" type="Guid" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="EventProvider" type="EventProvider"/>
+
+</xs:schema>

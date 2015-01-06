@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions 
+  xmlns="http://schemas.microsoft.com/build/2009/properties"
+  >
+
+  <!-- Content Type -->
+  <ContentType Name="EventProvider" DisplayName="Event Provider" ItemType="EventProvider" />
+  <ItemType Name="EventProvider" DisplayName="Event Provider" />
+  <FileExtension Name=".epx" ContentType="EventProvider" />
+
+  <!-- Property Page -->
+  <Rule Name="EventProvider" DisplayName="Event Provider" Order="500" PageTemplate="tool"   >
+    <Rule.Categories>
+      <Category Name="General" DisplayName="General" />
+    </Rule.Categories>
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="EventProvider" HasConfigurationCondition="true" />
+    </Rule.DataSource>
+    <BoolProperty Name="Verbose" DisplayName="Verbose" Description="Specifies verbose output." Category="General" Default="false" />
+  </Rule>
+  
+</ProjectSchemaDefinitions>
