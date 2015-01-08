@@ -297,35 +297,28 @@ namespace EventProviderGenerator
 
 #include ""{0}Base.h""
 
-class {0}
+class {0}Base
 {{
 public:
 
-    static bool IsEnabled()
+    bool IsEnabled()
     {{
         return {1}_Context.IsEnabled == EVENT_CONTROL_CODE_ENABLE_PROVIDER;
     }}
 {2}
-private:
 
-    static class EventProviderLifetime
+    {0}Base()
     {{
-    public:
+        EventRegister{1}();
+    }}
 
-        EventProviderLifetime()
-        {{
-            EventRegister{1}();
-        }}
-
-        ~EventProviderLifetime()
-        {{
-            EventUnregister{1}();
-        }}
-
-    }} s_lifetime;
+    ~{0}Base()
+    {{
+        EventUnregister{1}();
+    }}
 }};
 
-__declspec(selectany) {0}::EventProviderLifetime {0}::s_lifetime;
+__declspec(selectany) {0}Base {0};
 ",
             m_filename,
             m_safeProviderName,
@@ -342,47 +335,98 @@ __declspec(selectany) {0}::EventProviderLifetime {0}::s_lifetime;
 
             if ((args != null) && (args.Length > 0))
             {
-                bool addComma = false;
-                foreach (var arg in args)
+                var va = args[0] as VarArgs;
+                if ((args.Length == 1) && (va != null))
                 {
-                    if (addComma)
+                    string type;
+                    string printf;
+                    switch (va.Type)
                     {
-                        argAndTypeList.Append(", ");
-                        argList.Append(", ");
+                        case String.AnsiString: 
+                            type = "char";
+                            printf = "vsprintf_s";
+                            break;
+                        case String.UnicodeString: 
+                            type = "wchar_t";
+                            printf = "vswprintf_s";
+                            break;
+                        default: throw new ArgumentException();
                     }
 
-                    var a = arg as Arg;
-                    var va = arg as VarArgs;
-                    if (a != null)
-                    {
-                        argAndTypeList.AppendFormat("{0} {1}", GetCppType(a.Type), GetCamelCasedString(a.Name));
-                        argList.AppendFormat("{0}", GetCamelCasedString(a.Name));
-                        addComma = true;
-                    }
-                    else if (va != null)
-                    {
-                        argAndTypeList.AppendFormat("{0} {1}", GetCppType(va.Type), GetCamelCasedString(va.Name));
-                        argList.AppendFormat("{0}", GetCamelCasedString(va.Name));
-                        addComma = true;
-                    }
-                    else
-                    {
-                        throw new InvalidDataException(System.String.Format("Invalid argument type: {0}", arg.GetType()));
-                    }
+                    eventMethods.AppendFormat(@"
+    void {0}(_In_z_ const {1}* format, ...)
+    {{
+        if (!EventEnabled{3}())
+        {{
+            return;
+        }}
+
+        {1} message[1024];
+
+        va_list args;
+        va_start(args, format);
+        {4}(message, format, args);
+        va_end(args);
+
+        EventWrite{3}(message);
+    }}
+",
+                    name,
+                    type,
+                    GetCamelCasedString(va.Name),
+                    symbol,
+                    printf
+                        );
                 }
-            }
+                else
+                {
+                    bool addComma = false;
+                    foreach (var arg in args)
+                    {
+                        if (addComma)
+                        {
+                            argAndTypeList.Append(", ");
+                            argList.Append(", ");
+                        }
 
-            eventMethods.AppendFormat(@"
-    static void {0}({1})
+                        var a = arg as Arg;
+                        if (a != null)
+                        {
+                            argAndTypeList.AppendFormat("{0} {1}", GetCppType(a.Type), GetCamelCasedString(a.Name));
+                            argList.AppendFormat("{0}", GetCamelCasedString(a.Name));
+                            addComma = true;
+                        }
+                        else
+                        {
+                            throw new InvalidDataException(System.String.Format("Invalid argument type: {0}", arg.GetType()));
+                        }
+                    }
+
+                    eventMethods.AppendFormat(@"
+    void {0}({1})
     {{
         EventWrite{3}({2});
     }}
 ",
-            name,
-            argAndTypeList,
-            argList,
-            symbol
+                        name,
+                        argAndTypeList,
+                        argList,
+                        symbol
+                    );
+                }
+            }
+            else
+            {
+                eventMethods.AppendFormat(@"
+    void {0}()
+    {{
+        EventWrite{1}();
+    }}
+",
+                    name,
+                    symbol
                 );
+            }
         }
 
         private static string GetCppType(Type type)

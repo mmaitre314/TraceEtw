@@ -183,3 +183,4 @@ UpgradeLog*.htm
 FakesAssemblies/
 /TraceEtw/TraceEtwTests.Desktop/Events
 /TraceEtw/TraceEtwTests.Windows/Events
+/App1

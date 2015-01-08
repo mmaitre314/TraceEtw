@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="91b150cc-38cc-4972-a3a6-7aa381a9dbbd" Publisher="CN=Matthieu" Version="1.0.0.0" />
+  <Identity Name="b9287782-5e60-451b-a436-dcc6d4a2e9cd" Publisher="CN=Matthieu" Version="1.0.0.0" />
   <Properties>
-    <DisplayName>TraceEtwTests_Windows</DisplayName>
+    <DisplayName>EventListenerTests.Windows</DisplayName>
     <PublisherDisplayName>Matthieu</PublisherDisplayName>
     <Logo>Images\UnitTestStoreLogo.png</Logo>
-    <Description>TraceEtwTests_Windows</Description>
+    <Description>EventListenerTests.Windows</Description>
   </Properties>
   <Prerequisites>
     <OSMinVersion>6.3.0</OSMinVersion>

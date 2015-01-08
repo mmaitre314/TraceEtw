@@ -41,7 +41,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <NuGetPackageImportStamp>6e3d0a5c</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>77e4a280</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -102,12 +102,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\MMaitre.TraceEtw.1.0.1\build\native\MMaitre.TraceEtw.targets" Condition="Exists('..\packages\MMaitre.TraceEtw.1.0.1\build\native\MMaitre.TraceEtw.targets')" />
+    <Import Project="..\packages\MMaitre.TraceEtw.1.0.9\build\native\MMaitre.TraceEtw.targets" Condition="Exists('..\packages\MMaitre.TraceEtw.1.0.9\build\native\MMaitre.TraceEtw.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MMaitre.TraceEtw.1.0.1\build\native\MMaitre.TraceEtw.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MMaitre.TraceEtw.1.0.1\build\native\MMaitre.TraceEtw.targets'))" />
+    <Error Condition="!Exists('..\packages\MMaitre.TraceEtw.1.0.9\build\native\MMaitre.TraceEtw.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MMaitre.TraceEtw.1.0.9\build\native\MMaitre.TraceEtw.targets'))" />
   </Target>
 </Project>

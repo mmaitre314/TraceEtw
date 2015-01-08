@@ -31,9 +31,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <EventProvider Include="EtwLogger.epx" />
   </ItemGroup>
   <ItemGroup>
-    <EventProvider Include="EtwLogger.epx" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
