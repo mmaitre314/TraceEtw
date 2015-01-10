@@ -94,7 +94,7 @@ Recording and displaying events
 [scripts wevtutil, xperf]
 [WPA]
 
-In-app recording
+In-app event recording
 ---
 
 The project also contains an API for apps to record events fired inside its own process. This is currently not included in the NuGet package as it works in Windows apps but not in Windows Store apps ([EnableTrace()](http://msdn.microsoft.com/en-us/library/windows/desktop/aa363710(v=vs.85).aspx) function banned there).
