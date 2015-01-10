@@ -2,7 +2,7 @@
 
 [Event Tracing for Windows (ETW)](http://msdn.microsoft.com/en-us/library/windows/desktop/aa363668(v=vs.85).aspx) is very powerful but notoriously complex. In C#, [EventSource](http://msdn.microsoft.com/en-us/library/system.diagnostics.tracing.eventsource(v=vs.110).aspx) made that technology much more approachable. This project aims at providing a similar solution for C++, both in Desktop apps and Windows/Windows Phone Universal Store apps. 
 
-Defining event providers
+Defining events
 ---
 
 Add an XML file with .epx extension (as in: Event Provider XML) to the Visual Studio project.
