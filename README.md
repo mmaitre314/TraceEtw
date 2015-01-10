@@ -82,3 +82,19 @@ Recording and displaying events
 [scripts wevtutil, xperf]
 [WPA]
 
+In-app recording
+---
+
+The project also contains an API for apps to record events fired inside its own process. This is currently not included in the NuGet package as it works in Windows apps but not in Windows Store apps ([EnableTrace()](http://msdn.microsoft.com/en-us/library/windows/desktop/aa363710(v=vs.85).aspx) function banned there).
+
+Recording events is just a matter of creating an `InProcEventListener` object, passing the folder where the log file should be created and the list of event provider GUIDs to enable:
+
+```C++
+auto listener = ref new InProcEventListener(
+    ApplicationData::Current->LocalFolder,
+    ref new Vector < Guid > { MMaitre_TraceEtw }
+);
+
+EtwLogger.Trace("1");
+```
+
