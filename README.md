@@ -76,6 +76,18 @@ EtwLogger.ALongOperationStart(this);
 EtwLogger.ALongOperationStop(this, S_OK);
 ```
 
+The `IsEnabled()` method on the logger class allows traces which may require expensive computations to only run when events are being recorded:
+
+```C++
+
+if (EtwLogger.IsEnabled())
+{
+    string message = GatherTraceInformation()
+    EtwLogger.Trace(L"Trace information: %s", message.c_str());
+}
+
+```
+
 Recording and displaying events
 ---
 
