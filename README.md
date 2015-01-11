@@ -1,6 +1,6 @@
 [doc in progress]
 
-[![Build status](https://ci.appveyor.com/api/projects/status/d3w7r6o478u53o8d?svg=true)](https://ci.appveyor.com/project/mmaitre314/traceetw)
+[![Build status](https://ci.appveyor.com/api/projects/status/d3w7r6o478u53o8d?svg=true)![Test status](http://teststatusbadge.azurewebsites.net/api/status/mmaitre314/traceetw)](https://ci.appveyor.com/project/mmaitre314/traceetw)
 [![NuGet package](http://mmaitre314.github.io/images/nuget.png)](https://www.nuget.org/packages/MMaitre.TraceEtw/)
 
 [Event Tracing for Windows (ETW)](http://msdn.microsoft.com/en-us/library/windows/desktop/aa363668(v=vs.85).aspx) is very powerful but notoriously complex. In C#, [EventSource](http://msdn.microsoft.com/en-us/library/system.diagnostics.tracing.eventsource(v=vs.110).aspx) made that technology much more approachable. This project aims at providing a similar solution for C++, both in Desktop apps and Windows/Windows Phone Universal Store apps. 
