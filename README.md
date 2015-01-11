@@ -1,16 +1,12 @@
-[doc in progress]
-
 [![Build status](https://ci.appveyor.com/api/projects/status/d3w7r6o478u53o8d?svg=true)![Test status](http://teststatusbadge.azurewebsites.net/api/status/mmaitre314/traceetw)](https://ci.appveyor.com/project/mmaitre314/traceetw)
 [![NuGet package](http://mmaitre314.github.io/images/nuget.png)](https://www.nuget.org/packages/MMaitre.TraceEtw/)
 
-[Event Tracing for Windows (ETW)](http://msdn.microsoft.com/en-us/library/windows/desktop/aa363668(v=vs.85).aspx) is very powerful but notoriously complex. In C#, [EventSource](http://msdn.microsoft.com/en-us/library/system.diagnostics.tracing.eventsource(v=vs.110).aspx) made that technology much more approachable. This project aims at providing a similar solution for C++, both in Desktop apps and Windows/Windows Phone Universal Store apps. 
+[Event Tracing for Windows (ETW)](http://msdn.microsoft.com/en-us/library/windows/desktop/aa363668(v=vs.85).aspx) is  powerful but notoriously complex. In C#, [EventSource](http://msdn.microsoft.com/en-us/library/system.diagnostics.tracing.eventsource(v=vs.110).aspx) made that technology much more approachable. This project aims at providing a similar solution for C++, both for Desktop apps and for Windows/Windows Phone Universal Store apps. 
 
 Defining events
 ---
 
-Add an XML file with .epx extension (as in: Event Provider XML) to the Visual Studio project.
-
-Say a file called EtwLogger.epx contains a basic marker event:
+To begin with, add an XML file with an .epx extension (as in 'Event Provider XML') to the Visual Studio project:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -21,20 +17,28 @@ Say a file called EtwLogger.epx contains a basic marker event:
     Guid="{A006BF16-179A-4BDF-A0A2-917AC6CA98D6}"
     >
 
-    <Event Name="Marker" />
-
 </EventProvider>
 ```
 
-A header called Events\EtwLogger.h gets generated during the build which lets the app send markers at appropriate times:
+The `xsi` attributes enable Intellisense in Visual Studio.
+
+A basic marker event with no payload can be added using
+
+```xml
+<Event Name="Marker" />
+```
+
+when the project is compiled a header gets generated from the XML file, which lets the app raise the marker event when appropriate 
 
 ```C++
+#include "Events\EtwLogger.h"
+
 EtwLogger.Marker();
 ```
 
-[WPA]
+where `EtwLogger` is the name of the .epx file.
 
-The xsi attributes are there to enable Intellisense in Visual Studio.
+[WPA]
 
 The XML file supports defining more complex events. For instance, an event can have arguments and a trace level:
 
