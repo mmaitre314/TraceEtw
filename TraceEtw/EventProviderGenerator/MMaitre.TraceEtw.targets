@@ -1,26 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath>$(SolutionDir)\.build</MSBuildCommunityTasksPath>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+
   <ItemGroup>
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)EventProvider.xml" />
     <AvailableItemName Include="EventProvider">
-      <Targets>GenerateEventProvider</Targets>
+      <Targets>TraceEtwGenerate</Targets>
     </AvailableItemName>
   </ItemGroup>
-  
+
   <PropertyGroup>
-    <CompileDependsOn>$(CompileDependsOn);GenerateEventProvider</CompileDependsOn>
+    <CompileDependsOn>$(CompileDependsOn);TraceEtwGenerate</CompileDependsOn>
     <CleanDependsOn>$(CleanDependsOn);CleanEventProvider</CleanDependsOn>
   </PropertyGroup>
 
   <UsingTask TaskName="EventProviderGenerator.GenerateEventProvider"
              AssemblyFile="$(MSBuildThisFileDirectory)EventProviderGenerator.dll"/>
 
-  <Target Name="GenerateEventProvider"
+  <Target Name="TraceEtwGenerate"
           BeforeTargets="ClCompile"
+          DependsOnTargets="TraceEtwGenerateScripts;TraceEtwGenerateManifestAndHeadersAndResources;TraceEtwCopyManifest" />
+
+  <Target Name="TraceEtwGenerateScripts"
+         BeforeTargets="TraceEtwGenerate"
+         Inputs="@(EventProvider)"
+         Outputs="@(EventProvider -> '$(OutDir)Register%(Filename).cmd');@(EventProvider -> '$(OutDir)Unregister%(Filename).cmd');@(EventProvider -> '$(OutDir)Trace%(Filename).cmd')" >
+
+    <!-- Read the provider name (ex: MMaitre-TraceEtw) -->
+    <XmlPeek Namespaces="&lt;Namespace Prefix='xsi' Uri='http://www.w3.org/2001/XMLSchema-instance'/&gt;"
+             XmlInputPath="%(EventProvider.FullPath)"
+             Query="/EventProvider/@Name">
+      <Output TaskParameter="Result" PropertyName="TraceEtwProviderName" />
+    </XmlPeek>
+
+    <!-- Set replacement values -->
+    <ItemGroup>
+      <Tokens Include="filename">
+        <ReplacementValue>%(EventProvider.Filename)</ReplacementValue>
+      </Tokens>
+      <!-- ex: EtwLogger -->
+      <Tokens Include="providerName">
+        <ReplacementValue>$(TraceEtwProviderName)</ReplacementValue>
+      </Tokens>
+      <!-- ex: MMaitre-TraceEtw -->
+      <Tokens Include="binary">
+        <ReplacementValue>$(TargetFileName)</ReplacementValue>
+      </Tokens>
+      <!-- ex: TraceEtwTests.Windows.dll -->
+    </ItemGroup>
+
+    <!-- Generate scripts from templates -->
+    <TemplateFile Template="$(MSBuildThisFileDirectory)Register.cmd.template" OutputFilename="$(OutDir)Register%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
+    <TemplateFile Template="$(MSBuildThisFileDirectory)Unregister.cmd.template" OutputFilename="$(OutDir)Unregister%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
+    <TemplateFile Template="$(MSBuildThisFileDirectory)Trace.cmd.template" OutputFilename="$(OutDir)Trace%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
+  </Target>
+
+  <Target Name="TraceEtwGenerateManifestAndHeadersAndResources"
+          BeforeTargets="TraceEtwCopyManifest"
           Inputs="@(EventProvider)"
-          Outputs="@(EventProvider -> '$(ProjectDir)Events\%(Filename).man');@(EventProvider -> '$(ProjectDir)Events\%(Filename)Base.h');@(EventProvider -> '$(ProjectDir)Events\%(Filename).h')"
-          >
+          Outputs="@(EventProvider -> '$(ProjectDir)Events\%(Filename).man');@(EventProvider -> '$(ProjectDir)Events\%(Filename)Base.h');@(EventProvider -> '$(ProjectDir)Events\%(Filename).h');@(EventProvider -> '$(ProjectDir)Events\%(Filename)Base.rc')" >
     <Message Importance="high" Text="Processing %(EventProvider.Filename).epx" />
     <ItemGroup>
       <ClInclude Include="$(ProjectDir)Events\%(EventProvider.Filename)Base.h" />
@@ -32,6 +75,13 @@
                             OutputDir="$(ProjectDir)Events\"
                             Verbose="%(EventProvider.Verbose)"
                             />
+  </Target>
+
+  <Target Name="TraceEtwCopyManifest"
+          BeforeTargets="TraceEtwGenerate"
+          Inputs="@(EventProvider -> '$(ProjectDir)Events\%(Filename).man')"
+          Outputs="@(EventProvider -> '$(OutDir)%(Filename).man')" >
+    <Copy SourceFiles="@(EventProvider -> '$(ProjectDir)Events\%(Filename).man')" DestinationFolder="$(OutDir)" />
   </Target>
 
   <Target Name="CleanEventProvider" BeforeTargets="Clean">

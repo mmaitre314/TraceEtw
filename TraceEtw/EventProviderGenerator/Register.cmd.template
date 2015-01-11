@@ -1,0 +1,5 @@
+@echo off
+wevtutil im %~dp0${filename}.man /rf:%~dp0${binary} /mf:%~dp0${binary}
+echo.
+wevtutil gp ${providerName}
+pause

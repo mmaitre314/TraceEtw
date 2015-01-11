@@ -13,10 +13,16 @@
     <description>Simplified Event Tracing for Windows (ETW) in Windows/Windows Phone Store apps. Traces can be either structured or unstructured. For documentation see https://github.com/mmaitre314/TraceEtw .</description>
     <copyright>Copyright © 2014, Matthieu Maitre. All rights reserved.</copyright>
     <tags>Native WinRT ETW Tracing</tags>
+    <dependencies>
+      <dependency id="MSBuildTasks" version="1.4.0.88" />
+    </dependencies>  
   </metadata>
   <files>
     <file src="MMaitre.TraceEtw.targets" target="build\native\" />
     <file src="EventProvider.xml" target="build\native\" />
+    <file src="Register.cmd.template" target="build\native\" />
+    <file src="Unregister.cmd.template" target="build\native\" />
+    <file src="Trace.cmd.template" target="build\native\" />
     <file src="bin\Release\EventProviderGenerator.dll" target="build\native\" />
   </files>
 </package>

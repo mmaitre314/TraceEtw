@@ -1,0 +1,8 @@
+@echo off
+xperf -start trace -on ${providerName} -f %~dp0temp.etl
+echo Run your scenario
+pause
+xperf -stop trace -d %~dp0trace.etl
+xperf -i %~dp0trace.etl -o %~dp0trace.log
+del %~dp0temp.etl
+pause

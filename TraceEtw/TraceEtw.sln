@@ -22,6 +22,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TraceEtwTests.Windows", "Tr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventListenerTests.Windows", "EventListenerTests.Windows\EventListenerTests.Windows.csproj", "{BBBF31C9-D513-4DF2-B03F-50705D8015EA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{943DB141-6B9C-4485-B39E-99E65A6A6C82}"
+	ProjectSection(SolutionItems) = preProject
+		Build.proj = Build.proj
+		.build\MSBuild.Community.Tasks.dll = .build\MSBuild.Community.Tasks.dll
+		.build\MSBuild.Community.Tasks.targets = .build\MSBuild.Community.Tasks.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Diagnostics\Diagnostics.Shared\Diagnostics.Shared.vcxitems*{d56153d8-3d43-4518-8faf-7d9973e6f1fa}*SharedItemsImports = 9
