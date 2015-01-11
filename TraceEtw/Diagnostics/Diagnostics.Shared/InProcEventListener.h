@@ -8,13 +8,17 @@ namespace Diagnostics
 
         InProcEventListener(
             _In_ Windows::Storage::IStorageFolder^ folder,
+            _In_ Platform::String^ filename,
             _In_ Windows::Foundation::Collections::IIterable<Platform::Guid>^ providers
             );
 
         // IClosable
         virtual ~InProcEventListener();
 
-        property Platform::String^ Path { Platform::String^ get() { return _path; } }
+        Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFile^>^ GetLogFileAsync()
+        {
+            return Windows::Storage::StorageFile::GetFileFromPathAsync(_path);
+        }
 
     private:
 

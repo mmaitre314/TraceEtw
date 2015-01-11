@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "EventTraceProperties.h"
 
+using namespace Platform;
 using namespace Windows::Storage;
 
 EventTraceProperties::EventTraceProperties()
@@ -33,11 +34,14 @@ EventTraceProperties::EventTraceProperties(__in REFGUID sessionGuid)
     Wnode.Guid = sessionGuid;
 }
 
-EventTraceProperties::EventTraceProperties(__in IStorageFolder^ folder)
+EventTraceProperties::EventTraceProperties(__in IStorageFolder^ folder, _In_ String^ filename)
     : EventTraceProperties()
 {
+    CHKNULL(folder);
+    CHKNULL(filename);
+
     // Use a GUID as session name
     CHK(CoCreateGuid(&Wnode.Guid));
     CHK(StringFromGUID2(Wnode.Guid, LoggerName, ARRAYSIZE(LoggerName)));
-    CHK(StringCchPrintf(LogFileName, ARRAYSIZE(LogFileName), L"%s\\%s.etl", folder->Path->Data(), LoggerName));
+    CHK(StringCchPrintf(LogFileName, ARRAYSIZE(LogFileName), L"%s\\%s", folder->Path->Data(), filename->Data()));
 }

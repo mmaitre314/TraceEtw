@@ -18,11 +18,15 @@ namespace EventListenerTests.Windows
         {
             StorageFile file;
 
-            using (var listener = new InProcEventListener(ApplicationData.Current.LocalFolder, new Guid[] { Log.Events.Guid }))
+            using (var listener = new InProcEventListener(
+                ApplicationData.Current.LocalFolder, 
+                "CS_Windows_TestBasic.etl", 
+                new Guid[] { Log.Events.Guid }
+                ))
             {
-                Logger.LogMessage("Log file: {0}", listener.Path);
+                file = await listener.GetLogFileAsync();
 
-                file = await StorageFile.GetFileFromPathAsync(listener.Path);
+                Logger.LogMessage("Log file: {0}", file.Path);
 
                 Assert.IsTrue(Log.Events.IsEnabled());
 

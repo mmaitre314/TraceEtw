@@ -9,10 +9,11 @@ using namespace Windows::Storage;
 
 InProcEventListener::InProcEventListener(
     _In_ IStorageFolder^ folder,
+    _In_ Platform::String^ filename,
     _In_ IIterable<Guid>^ providers
     )
     : _sessionHandle(0)
-    , _traceProperties(folder)
+    , _traceProperties(folder, filename)
 {
     CHKNULL(folder);
     CHKNULL(providers);
