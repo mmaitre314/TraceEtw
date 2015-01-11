@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!-- Import MSBuild Community Tasks -->
   <PropertyGroup>
     <MSBuildCommunityTasksPath>$(SolutionDir)\.build</MSBuildCommunityTasksPath>
   </PropertyGroup>
-
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
 
+  <!-- Define the EventProvider content type -->
   <ItemGroup>
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)EventProvider.xml" />
     <AvailableItemName Include="EventProvider">
@@ -14,18 +15,29 @@
     </AvailableItemName>
   </ItemGroup>
 
+  <!-- Include targets in build and clean passes -->
   <PropertyGroup>
     <CompileDependsOn>$(CompileDependsOn);TraceEtwGenerate</CompileDependsOn>
     <CleanDependsOn>$(CleanDependsOn);CleanEventProvider</CleanDependsOn>
   </PropertyGroup>
 
+  <!-- Load the EventProviderGenerator assembly -->
   <UsingTask TaskName="EventProviderGenerator.GenerateEventProvider"
              AssemblyFile="$(MSBuildThisFileDirectory)EventProviderGenerator.dll"/>
 
+  <!--
+  Define targets:
+    TraceEtwGenerate
+      TraceEtwGenerateScripts
+      TraceEtwGenerateManifestAndHeadersAndResources
+      TraceEtwCopyManifest
+  -->
+  
   <Target Name="TraceEtwGenerate"
           BeforeTargets="ClCompile"
           DependsOnTargets="TraceEtwGenerateScripts;TraceEtwGenerateManifestAndHeadersAndResources;TraceEtwCopyManifest" />
 
+  <!-- Create scripts to register/unregister/record the event provider from templates -->
   <Target Name="TraceEtwGenerateScripts"
          BeforeTargets="TraceEtwGenerate"
          Inputs="@(EventProvider)"
@@ -40,18 +52,9 @@
 
     <!-- Set replacement values -->
     <ItemGroup>
-      <Tokens Include="filename">
-        <ReplacementValue>%(EventProvider.Filename)</ReplacementValue>
-      </Tokens>
-      <!-- ex: EtwLogger -->
-      <Tokens Include="providerName">
-        <ReplacementValue>$(TraceEtwProviderName)</ReplacementValue>
-      </Tokens>
-      <!-- ex: MMaitre-TraceEtw -->
-      <Tokens Include="binary">
-        <ReplacementValue>$(TargetFileName)</ReplacementValue>
-      </Tokens>
-      <!-- ex: TraceEtwTests.Windows.dll -->
+      <Tokens Include="filename"><ReplacementValue>%(EventProvider.Filename)</ReplacementValue></Tokens> <!-- ex: EtwLogger -->
+      <Tokens Include="providerName"><ReplacementValue>$(TraceEtwProviderName)</ReplacementValue></Tokens> <!-- ex: MMaitre-TraceEtw -->
+      <Tokens Include="binary"><ReplacementValue>$(TargetFileName)</ReplacementValue></Tokens> <!-- ex: TraceEtwTests.Windows.dll -->
     </ItemGroup>
 
     <!-- Generate scripts from templates -->
@@ -61,6 +64,7 @@
     <TemplateFile Template="$(MSBuildThisFileDirectory)Record.wprp.template" OutputFilename="$(OutDir)%(EventProvider.Filename).wprp" Tokens="@(Tokens)" />
   </Target>
 
+  <!-- Create the event-provider manifest and its associated headers and resources -->
   <Target Name="TraceEtwGenerateManifestAndHeadersAndResources"
           BeforeTargets="TraceEtwCopyManifest"
           Inputs="@(EventProvider)"
@@ -78,6 +82,7 @@
                             />
   </Target>
 
+  <!-- Copy the event-provider manifest to the output directory -->
   <Target Name="TraceEtwCopyManifest"
           BeforeTargets="TraceEtwGenerate"
           Inputs="@(EventProvider -> '$(ProjectDir)Events\%(Filename).man')"
@@ -85,6 +90,7 @@
     <Copy SourceFiles="@(EventProvider -> '$(ProjectDir)Events\%(Filename).man')" DestinationFolder="$(OutDir)" />
   </Target>
 
+  <!-- Cleanup -->
   <Target Name="CleanEventProvider" BeforeTargets="Clean">
     <RemoveDir Directories="$(ProjectDir)Events\" />
   </Target>
