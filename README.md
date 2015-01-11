@@ -104,8 +104,16 @@ if (EtwLogger.IsEnabled())
 Recording and displaying events
 ---
 
-[scripts wevtutil, xperf]
-[WPA]
+Besides the logger header, the build also generates a set of scripts, a WPRP profile, and an event-provider manifest:
+
+- RegisterEtwLogger.cmd/UnregisterEtwLogger.cmd - scripts to register and unregister the event provider. Must be run elevated.
+- TraceEtwLogger.cmd - script to record events.
+- EtwLogger.wprp - [recording profile](http://msdn.microsoft.com/en-us/library/windows/hardware/hh448223.aspx) for [Windows Performance Recorder (WPR)](http://msdn.microsoft.com/en-us/library/windows/hardware/hh448205.aspx)
+- EtwLogger.man - event-provider manifest
+
+The files are placed in the output folder along with the binaries.
+
+The trace script relies on xperf to record events. It is part of the [Windows Performance Toolkit](http://msdn.microsoft.com/en-us/library/windows/hardware/hh162945.aspx) like WPA and WPR. Its ability to run a merge pass on the .etl event log files tends to make it more robust when it comes to collecting event-manifest info.
 
 In-app event recording
 ---
