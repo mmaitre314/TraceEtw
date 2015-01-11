@@ -59,6 +59,7 @@
     <None Include="MMaitre.TraceEtw.targets" />
     <None Include="pack.cmd" />
     <None Include="publish.cmd" />
+    <None Include="Record.wprp.template" />
     <None Include="Register.cmd.template" />
     <None Include="Trace.cmd.template" />
     <None Include="Unregister.cmd.template" />

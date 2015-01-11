@@ -29,7 +29,7 @@
   <Target Name="TraceEtwGenerateScripts"
          BeforeTargets="TraceEtwGenerate"
          Inputs="@(EventProvider)"
-         Outputs="@(EventProvider -> '$(OutDir)Register%(Filename).cmd');@(EventProvider -> '$(OutDir)Unregister%(Filename).cmd');@(EventProvider -> '$(OutDir)Trace%(Filename).cmd')" >
+         Outputs="@(EventProvider -> '$(OutDir)Register%(Filename).cmd');@(EventProvider -> '$(OutDir)Unregister%(Filename).cmd');@(EventProvider -> '$(OutDir)Trace%(Filename).cmd');@(EventProvider -> '$(OutDir)%(Filename).wprp')" >
 
     <!-- Read the provider name (ex: MMaitre-TraceEtw) -->
     <XmlPeek Namespaces="&lt;Namespace Prefix='xsi' Uri='http://www.w3.org/2001/XMLSchema-instance'/&gt;"
@@ -58,6 +58,7 @@
     <TemplateFile Template="$(MSBuildThisFileDirectory)Register.cmd.template" OutputFilename="$(OutDir)Register%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
     <TemplateFile Template="$(MSBuildThisFileDirectory)Unregister.cmd.template" OutputFilename="$(OutDir)Unregister%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
     <TemplateFile Template="$(MSBuildThisFileDirectory)Trace.cmd.template" OutputFilename="$(OutDir)Trace%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
+    <TemplateFile Template="$(MSBuildThisFileDirectory)Record.wprp.template" OutputFilename="$(OutDir)%(EventProvider.Filename).wprp" Tokens="@(Tokens)" />
   </Target>
 
   <Target Name="TraceEtwGenerateManifestAndHeadersAndResources"

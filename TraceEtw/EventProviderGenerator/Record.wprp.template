@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WindowsPerformanceRecorder Version="1.0">
+  <Profiles>
+    <EventCollector Id="EventCollector" Name="EventCollector">
+      <BufferSize Value="1024" />
+      <Buffers Value="200" />
+    </EventCollector>
+    <EventProvider Id="${filename}" Name="${providerName}" />
+
+    <Profile Id="${filename}.Verbose.File" Name="${filename}" Description="${providerName}" LoggingMode="File" DetailLevel="Verbose">
+      <Collectors>
+        <EventCollectorId Value="EventCollector">
+          <EventProviders>
+            <EventProviderId Value="${filename}" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    
+    <Profile Id="${filename}.Verbose.Memory" Name="${filename}" Description="${providerName}" Base="${filename}.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose" />
+  </Profiles>
+</WindowsPerformanceRecorder>
