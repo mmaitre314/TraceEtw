@@ -20,15 +20,15 @@ To begin with, add an XML file with an .epx extension (as in 'Event Provider XML
 </EventProvider>
 ```
 
-The `xsi` attributes enable Intellisense in Visual Studio.
+where the `Name` and `Guid` attributes should be replaced with appropriate values. The GUID can be created using the 'Create GUID' tool in Visual Studio. The `xsi` attributes enable Intellisense.
 
-A basic marker event with no payload can be added using
+A basic marker event with no payload can be added using:
 
 ```xml
 <Event Name="Marker" />
 ```
 
-when the project is compiled a header gets generated from the XML file, which lets the app raise the marker event when appropriate 
+When the project is compiled a header gets generated from the XML file, which lets the app raise the marker event when appropriate:
 
 ```C++
 #include "Events\EtwLogger.h"
@@ -36,11 +36,13 @@ when the project is compiled a header gets generated from the XML file, which le
 EtwLogger.Marker();
 ```
 
-where `EtwLogger` is the name of the .epx file.
+where EtwLogger is the name of the .epx file.
 
-[WPA]
+[Windows Performance Analyzer (WPA)](http://msdn.microsoft.com/en-us/library/windows/hardware/hh448170.aspx) will start displaying the event:
 
-The XML file supports defining more complex events. For instance, an event can have arguments and a trace level:
+![WPA](http://mmaitre314.github.io/images/TraceEtwWpa.PNG)
+
+The XML file allows defining more complex events. Events can have arguments and a trace level:
 
 ```xml
 <Event Name="Trace" Level="Verbose">
@@ -55,7 +57,7 @@ EtwLogger.Trace(this, 314);
 
 The default trace level is Informational.
 
-An event can also have variable number of arguments, which become unstructured traces:
+Events can also have a variable number of arguments, which generates unstructured traces (i.e. `printf`):
 
 ```xml
 <Event Name="Trace">
@@ -67,7 +69,7 @@ An event can also have variable number of arguments, which become unstructured t
 EtwLogger.Trace("Received %i calls from %s", 3, "localhost");
 ```
 
-Beginning and end of operations can be tracked by defining tasks:
+Defining task events allows tracking the beginning and end of long operations:
 
 ```xml
 <Task Name="ALongOperation">
