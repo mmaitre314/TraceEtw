@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Trace ETW by mmaitre314</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/mmaitre314/TraceEtw">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/mmaitre314/TraceEtw/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/mmaitre314/TraceEtw/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Trace ETW</h1>
+          <p>High-performance tracing for C++ Desktop and Windows/Windows Phone Store apps</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/mmaitre314">mmaitre314</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <p><a href="https://ci.appveyor.com/project/mmaitre314/traceetw"><img src="https://ci.appveyor.com/api/projects/status/d3w7r6o478u53o8d?svg=true" alt="Build status"><img src="http://teststatusbadge.azurewebsites.net/api/status/mmaitre314/traceetw" alt="Test status"></a>
+<a href="https://www.nuget.org/packages/MMaitre.TraceEtw/"><img src="http://mmaitre314.github.io/images/nuget.png" alt="NuGet package"></a></p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363668(v=vs.85).aspx">Event Tracing for Windows (ETW)</a> is  powerful but notoriously complex. In C#, <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.tracing.eventsource(v=vs.110).aspx">EventSource</a> made that technology much more approachable. This project aims at providing a similar solution for C++, both for Desktop apps and for Windows/Windows Phone Universal Store apps. </p>
+
+<h2>
+<a id="defining-events" class="anchor" href="#defining-events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining events</h2>
+
+<p>To begin with, add an XML file with an .epx extension (as in 'Event Provider XML') to the Visual Studio project:</p>
+
+<div class="highlight highlight-xml"><pre>&lt;?<span class="pl-ent">xml</span><span class="pl-e"> version</span>=<span class="pl-s1"><span class="pl-pds">"</span>1.0<span class="pl-pds">"</span></span><span class="pl-e"> encoding</span>=<span class="pl-s1"><span class="pl-pds">"</span>utf-8<span class="pl-pds">"</span></span>?&gt;
+&lt;<span class="pl-ent">EventProvider</span>
+    <span class="pl-e">xmlns</span><span class="pl-e">:</span><span class="pl-e">xsi</span>=<span class="pl-s1"><span class="pl-pds">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="pl-pds">"</span></span>
+    <span class="pl-e">xsi</span><span class="pl-e">:</span><span class="pl-e">noNamespaceSchemaLocation</span>=<span class="pl-s1"><span class="pl-pds">"</span>http://mmaitre314.github.io/EventProvider.xsd<span class="pl-pds">"</span></span>
+    <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>MMaitre-TraceEtw<span class="pl-pds">"</span></span> 
+    <span class="pl-e">Guid</span>=<span class="pl-s1"><span class="pl-pds">"</span>{A006BF16-179A-4BDF-A0A2-917AC6CA98D6}<span class="pl-pds">"</span></span>
+    &gt;
+
+&lt;/<span class="pl-ent">EventProvider</span>&gt;</pre></div>
+
+<p>where the <code>Name</code> and <code>Guid</code> attributes should be replaced with appropriate values. The GUID can be created using the 'Create GUID' tool in Visual Studio. The <code>xsi</code> attributes enable Intellisense.</p>
+
+<p>A basic marker event with no payload can be added using:</p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">Event</span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>Marker<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<p>When the project is compiled a header gets generated from the XML file, which lets the app raise the marker event when appropriate:</p>
+
+<div class="highlight highlight-C++"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>Events\EtwLogger.h<span class="pl-pds">"</span></span>
+
+EtwLogger.Marker();</pre></div>
+
+<p>where EtwLogger is the name of the .epx file.</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/windows/hardware/hh448170.aspx">Windows Performance Analyzer (WPA)</a> will start displaying the event:</p>
+
+<p><img src="http://mmaitre314.github.io/images/TraceEtwWpa.PNG" alt="WPA"></p>
+
+<p>The XML file allows defining more complex events. Events can have arguments and a trace level:</p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">Event</span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>Trace<span class="pl-pds">"</span></span> <span class="pl-e">Level</span>=<span class="pl-s1"><span class="pl-pds">"</span>Verbose<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">Arg</span> <span class="pl-e">Type</span>=<span class="pl-s1"><span class="pl-pds">"</span>Pointer<span class="pl-pds">"</span></span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>Object<span class="pl-pds">"</span></span> /&gt;
+    &lt;<span class="pl-ent">Arg</span> <span class="pl-e">Type</span>=<span class="pl-s1"><span class="pl-pds">"</span>UInt32<span class="pl-pds">"</span></span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>Count<span class="pl-pds">"</span></span> /&gt;
+&lt;/<span class="pl-ent">Event</span>&gt;</pre></div>
+
+<div class="highlight highlight-C++"><pre>EtwLogger.Trace(<span class="pl-v">this</span>, <span class="pl-c1">314</span>);</pre></div>
+
+<p>The default trace level is Informational.</p>
+
+<p>Events can also have a variable number of arguments, which generates unstructured traces (i.e. <code>printf</code>):</p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">Event</span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>Trace<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">VarArgs</span> <span class="pl-e">Type</span>=<span class="pl-s1"><span class="pl-pds">"</span>AnsiString<span class="pl-pds">"</span></span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>Message<span class="pl-pds">"</span></span> /&gt;
+&lt;/<span class="pl-ent">Event</span>&gt;</pre></div>
+
+<div class="highlight highlight-C++"><pre>EtwLogger.Trace(<span class="pl-s1"><span class="pl-pds">"</span>Received <span class="pl-c1">%i</span> calls from <span class="pl-c1">%s</span><span class="pl-pds">"</span></span>, <span class="pl-c1">3</span>, <span class="pl-s1"><span class="pl-pds">"</span>localhost<span class="pl-pds">"</span></span>);</pre></div>
+
+<p>Defining task events allows tracking the beginning and end of long operations:</p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">Task</span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>ALongOperation<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">Start</span>&gt;
+        &lt;<span class="pl-ent">Arg</span> <span class="pl-e">Type</span>=<span class="pl-s1"><span class="pl-pds">"</span>Pointer<span class="pl-pds">"</span></span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>Object<span class="pl-pds">"</span></span> /&gt;
+    &lt;/<span class="pl-ent">Start</span>&gt;
+    &lt;<span class="pl-ent">Stop</span>&gt;
+        &lt;<span class="pl-ent">Arg</span> <span class="pl-e">Type</span>=<span class="pl-s1"><span class="pl-pds">"</span>Pointer<span class="pl-pds">"</span></span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>Object<span class="pl-pds">"</span></span> /&gt;
+        &lt;<span class="pl-ent">Arg</span> <span class="pl-e">Type</span>=<span class="pl-s1"><span class="pl-pds">"</span>Int32<span class="pl-pds">"</span></span> <span class="pl-e">Name</span>=<span class="pl-s1"><span class="pl-pds">"</span>HResult<span class="pl-pds">"</span></span> /&gt;
+    &lt;/<span class="pl-ent">Stop</span>&gt;
+&lt;/<span class="pl-ent">Task</span>&gt;</pre></div>
+
+<div class="highlight highlight-C++"><pre>EtwLogger.ALongOperationStart(<span class="pl-v">this</span>);
+...
+EtwLogger.ALongOperationStop(<span class="pl-v">this</span>, S_OK);</pre></div>
+
+<p>The <code>IsEnabled()</code> method on the logger class allows traces which may require expensive computations to only run when events are being recorded:</p>
+
+<div class="highlight highlight-C++"><pre>
+<span class="pl-k">if</span> (EtwLogger.IsEnabled())
+{
+    string message = <span class="pl-s3">GatherTraceInformation</span>()
+    EtwLogger.<span class="pl-s3">Trace</span>(L<span class="pl-s1"><span class="pl-pds">"</span>Trace information: <span class="pl-c1">%s</span><span class="pl-pds">"</span></span>, message.<span class="pl-s3">c_str</span>());
+}
+</pre></div>
+
+<h2>
+<a id="recording-and-displaying-events" class="anchor" href="#recording-and-displaying-events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Recording and displaying events</h2>
+
+<p>Besides the logger header, the build also generates a set of scripts, a WPRP profile, and an event-provider manifest:</p>
+
+<ul>
+<li>RegisterEtwLogger.cmd/UnregisterEtwLogger.cmd - scripts to register and unregister the event provider. Must be run elevated.</li>
+<li>TraceEtwLogger.cmd - script to record events.</li>
+<li>EtwLogger.wprp - <a href="http://msdn.microsoft.com/en-us/library/windows/hardware/hh448223.aspx">recording profile</a> for <a href="http://msdn.microsoft.com/en-us/library/windows/hardware/hh448205.aspx">Windows Performance Recorder (WPR)</a>
+</li>
+<li>EtwLogger.man - event-provider manifest</li>
+</ul>
+
+<p>The files are placed in the output folder along with the binaries.</p>
+
+<p>The trace script relies on xperf to record events. It is part of the <a href="http://msdn.microsoft.com/en-us/library/windows/hardware/hh162945.aspx">Windows Performance Toolkit</a> like WPA and WPR. Its ability to run a merge pass on the .etl event log files tends to make it more robust when it comes to collecting event-manifest info.</p>
+
+<h2>
+<a id="in-app-event-recording" class="anchor" href="#in-app-event-recording" aria-hidden="true"><span class="octicon octicon-link"></span></a>In-app event recording</h2>
+
+<p>The project also contains an API for apps to record events fired inside their own process. This is currently not included in the NuGet package as it works in Windows apps but not in Windows Store apps (<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363710(v=vs.85).aspx">EnableTrace()</a> function banned there).</p>
+
+<p>Recording events is just a matter of creating an <code>InProcEventListener</code> object, passing a file path and the list of event provider GUIDs to enable:</p>
+
+<div class="highlight highlight-C++"><pre><span class="pl-st">auto</span> listener = ref <span class="pl-k">new</span> InProcEventListener(
+    ApplicationData::Current-&gt;LocalFolder,
+    L<span class="pl-s1"><span class="pl-pds">"</span>log.etl<span class="pl-pds">"</span></span>,
+    ref <span class="pl-k">new</span> Vector&lt;Guid&gt; { MMaitre_TraceEtw }
+);
+
+EtwLogger.Trace(<span class="pl-s1"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span>);</pre></div>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
