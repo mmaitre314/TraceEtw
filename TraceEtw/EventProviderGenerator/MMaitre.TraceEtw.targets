@@ -25,15 +25,13 @@
     <ItemGroup>
       <ClInclude Include="$(ProjectDir)Events\%(EventProvider.Filename)Base.h" />
       <ClInclude Include="$(ProjectDir)Events\%(EventProvider.Filename).h" />
-      <EventProviderTemporaryFiles Include="$(ProjectDir)Events\*.bin" />
-      <EventProviderTemporaryFiles Include="$(ProjectDir)Events\*.rc" />
+      <ResourceCompile Include="$(ProjectDir)Events\%(EventProvider.Filename)Base.rc" />
     </ItemGroup>
     <GenerateEventProvider  InputXmlPath="%(EventProvider.FullPath)"
                             WindowsSDK_ExecutablePath="$(WindowsSDK_ExecutablePath)"
                             OutputDir="$(ProjectDir)Events\"
                             Verbose="%(EventProvider.Verbose)"
                             />
-    <Delete Files="@(EventProviderTemporaryFiles)"/>
   </Target>
 
   <Target Name="CleanEventProvider" BeforeTargets="Clean">
