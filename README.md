@@ -14,13 +14,12 @@ To begin with, add an XML file with an .epx extension (as in 'Event Provider XML
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="http://mmaitre314.github.io/EventProvider.xsd"
     Name="MMaitre-TraceEtw" 
-    Guid="{A006BF16-179A-4BDF-A0A2-917AC6CA98D6}"
     >
 
 </EventProvider>
 ```
 
-where the `Name` and `Guid` attributes should be replaced with appropriate values. The GUID can be created using the 'Create GUID' tool in Visual Studio. The `xsi` attributes enable Intellisense.
+where the `Name` attribute should be replaced with some appropriate value.
 
 A basic marker event with no payload can be added using:
 
@@ -107,11 +106,11 @@ Recording and displaying events
 Besides the logger header, the build also generates a set of scripts, a WPRP profile, and an event-provider manifest:
 
 - RegisterEtwLogger.cmd/UnregisterEtwLogger.cmd - scripts to register and unregister the event provider. Must be run elevated.
-- TraceEtwLogger.cmd - script to record events.
+- RecordEtwLogger.cmd - script to record events.
 - EtwLogger.wprp - [recording profile](http://msdn.microsoft.com/en-us/library/windows/hardware/hh448223.aspx) for [Windows Performance Recorder (WPR)](http://msdn.microsoft.com/en-us/library/windows/hardware/hh448205.aspx)
 - EtwLogger.man - event-provider manifest
 
-The files are placed in the output folder along with the binaries.
+The files are placed in the output folder along with the binaries. Registering the manifest is optional when using WPR.
 
 The trace script relies on xperf to record events. It is part of the [Windows Performance Toolkit](http://msdn.microsoft.com/en-us/library/windows/hardware/hh162945.aspx) like WPA and WPR. Its ability to run a merge pass on the .etl event log files tends to make it more robust when it comes to collecting event-manifest info.
 
