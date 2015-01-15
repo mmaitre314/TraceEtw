@@ -41,7 +41,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <NuGetPackageImportStamp>1ddb0ce8</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>5049a2a4</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -103,18 +103,16 @@
     </EventProvider>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\MMaitre.TraceEtw.1.0.23\build\native\MMaitre.TraceEtw.targets" Condition="Exists('..\packages\MMaitre.TraceEtw.1.0.23\build\native\MMaitre.TraceEtw.targets')" />
+    <Import Project="..\packages\MMaitre.TraceEtw.1.0.24\build\native\MMaitre.TraceEtw.targets" Condition="Exists('..\packages\MMaitre.TraceEtw.1.0.24\build\native\MMaitre.TraceEtw.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MMaitre.TraceEtw.1.0.23\build\native\MMaitre.TraceEtw.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MMaitre.TraceEtw.1.0.23\build\native\MMaitre.TraceEtw.targets'))" />
+    <Error Condition="!Exists('..\packages\MMaitre.TraceEtw.1.0.24\build\native\MMaitre.TraceEtw.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MMaitre.TraceEtw.1.0.24\build\native\MMaitre.TraceEtw.targets'))" />
   </Target>
 </Project>
