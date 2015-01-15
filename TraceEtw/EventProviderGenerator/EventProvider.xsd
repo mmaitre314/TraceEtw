@@ -111,7 +111,7 @@
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="Name" type="xs:string" use="required"/>
-    <xs:attribute name="Guid" type="Guid" use="required"/>
+    <xs:attribute name="Guid" type="Guid" use="optional"/>
   </xs:complexType>
 
   <xs:element name="EventProvider" type="EventProvider"/>

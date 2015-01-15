@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -48,7 +49,7 @@ namespace EventProviderGenerator
             file.Directory.Create();
 
             Log.LogMessage(MessageImportance.Normal, "Generating manifest");
-            GenerateManifest(input);
+            string xmlManifest = GenerateManifest(input);
 
             Log.LogMessage(MessageImportance.Normal, "Generating base header");
             if (!GenerateBaseHeader())
@@ -57,7 +58,7 @@ namespace EventProviderGenerator
             }
 
             Log.LogMessage(MessageImportance.Normal, "Generating header");
-            GenerateHeader(input);
+            GenerateHeader(input, xmlManifest);
 
             return true;
         }
@@ -98,10 +99,16 @@ namespace EventProviderGenerator
         {
             var serializer = new XmlSerializer(typeof(EventProvider));
             var input = (EventProvider)serializer.Deserialize(new FileStream(InputXmlPath, FileMode.Open));
+
+            if (string.IsNullOrEmpty(input.Guid))
+            {
+                input.Guid = GetGuidFromName(input.Name).ToString("B"); // Format: {00000000-0000-0000-0000-000000000000} 
+            }
+
             return input;
         }
 
-        private void GenerateManifest(EventProvider input)
+        private string GenerateManifest(EventProvider input)
         {
             var events = new StringBuilder();
             var tasks = new StringBuilder();
@@ -200,8 +207,7 @@ namespace EventProviderGenerator
       </provider>
     </events>
   </instrumentation>
-</instrumentationManifest>
-",
+</instrumentationManifest>",
             input.Name,
             m_safeProviderName,
             input.Guid,
@@ -210,12 +216,66 @@ namespace EventProviderGenerator
             events
             );
 
-            File.WriteAllText(OutputDir + m_filename + ".man", manifest.ToString(), Encoding.UTF8);
+            var xmlManifest = manifest.ToString();
+
+            File.WriteAllText(OutputDir + m_filename + ".man", xmlManifest, Encoding.UTF8);
+
+            return xmlManifest;
         }
 
-        private string GetSafeString(string name)
+        private static string GetSafeString(string name)
         {
             return name.Replace('-', '_').Replace('.', '_');
+        }
+
+        private static Guid GetGuidFromName(string name)
+        {
+            name = name.ToUpperInvariant();     // names are case insensitive.
+
+            // The algorithm below is following the guidance of http://www.ietf.org/rfc/rfc4122.txt
+            // Create a blob containing a 16 byte number representing the namespace
+            // followed by the Unicode bytes in the name.
+
+            var bytes = new byte[name.Length * 2 + 16];
+            uint namespace1 = 0x482C2DB2;
+            uint namespace2 = 0xC39047c8;
+            uint namespace3 = 0x87F81A15;
+            uint namespace4 = 0xBFC130FB;
+
+            // Write the bytes most-significant byte first.  
+            for (int i = 3; 0 <= i; --i)
+            {
+                bytes[i] = (byte)namespace1;
+                namespace1 >>= 8;
+                bytes[i + 4] = (byte)namespace2;
+                namespace2 >>= 8;
+                bytes[i + 8] = (byte)namespace3;
+                namespace3 >>= 8;
+                bytes[i + 12] = (byte)namespace4;
+                namespace4 >>= 8;
+            }
+
+            // Write out  the name, most significant byte first
+            for (int i = 0; i < name.Length; i++)
+            {
+                bytes[2 * i + 16 + 1] = (byte)name[i];
+                bytes[2 * i + 16] = (byte)(name[i] >> 8);
+            }
+
+            // Compute the Sha1 hash 
+            var sha1 = SHA1.Create();
+            byte[] hash = sha1.ComputeHash(bytes);
+
+            // Create a GUID out of the first 16 bytes of the hash (SHA-1 create a 20 byte hash)
+            int a = (((((hash[3] << 8) + hash[2]) << 8) + hash[1]) << 8) + hash[0];
+            short b = (short)((hash[5] << 8) + hash[4]);
+            short c = (short)((hash[7] << 8) + hash[6]);
+
+            c = (short)((c & 0x0FFF) | 0x5000);   // Set high 4 bits of octet 7 to 5, as per RFC 4122
+
+            Guid guid = new Guid(a, b, c, hash[8], hash[9], hash[10], hash[11], hash[12], hash[13], hash[14], hash[15]);
+
+            return guid;
         }
 
         private static string HandleEventArgs(StringBuilder templates, int eventId, object[] args)
@@ -268,7 +328,7 @@ namespace EventProviderGenerator
             return templateId;
         }
 
-        private void GenerateHeader(EventProvider input)
+        private void GenerateHeader(EventProvider input, string xmlManifest)
         {
             var eventMethods = new StringBuilder();
 
@@ -295,34 +355,138 @@ namespace EventProviderGenerator
             manifest.AppendFormat(
 @"#pragma once
 
+struct _EVENT_FILTER_DESCRIPTOR;
+
+void EventCallback{1}(
+    _In_ const GUID* SourceId,
+    _In_ ULONG ControlCode,
+    _In_ UCHAR Level,
+    _In_ ULONGLONG MatchAnyKeyword,
+    _In_ ULONGLONG MatchAllKeyword,
+    _In_opt_ _EVENT_FILTER_DESCRIPTOR* FilterData,
+    _Inout_opt_ PVOID CallbackContext
+    );
+
+#define MCGEN_PRIVATE_ENABLE_CALLBACK_V2 EventCallback{1}
+
 #include ""{0}Base.h""
 
-class {0}Base
+class __declspec(uuid(""{3}"")) {0}Base
 {{
 public:
+
+    {0}Base()
+        : m_delayedEventWrite(false)
+    {{
+        EventRegister{1}();
+
+        if (m_delayedEventWrite)
+        {{
+            EventWriteManifest();
+        }}
+    }}
+
+    ~{0}Base()
+    {{
+        if ({1}Handle != 0)
+        {{
+            EventWriteManifest();
+        }}
+        EventUnregister{1}();
+    }}
 
     bool IsEnabled()
     {{
         return {1}_Context.IsEnabled == EVENT_CONTROL_CODE_ENABLE_PROVIDER;
     }}
 {2}
-
-    {0}Base()
+    void EventDelayedWriteManifest()
     {{
-        EventRegister{1}();
+        m_delayedEventWrite = true;
     }}
 
-    ~{0}Base()
+    void EventWriteManifest()
     {{
-        EventUnregister{1}();
+        static const char manifest[] =
+            R""({4})"";
+
+        // Currently a single chunk supported
+        static_assert(sizeof(manifest) < ManifestEnvelope::MaxChunkSize, ""Only one manifest chunk currently supported"");
+
+        EVENT_DESCRIPTOR eventDescr = {{ 0xFFFE, 1, 0, 0, 0xFE, 0xFFFE, -1 }};
+        ManifestEnvelope envelope = {{ 1, 1, 0, 0x5B, 1, 0 }};
+
+        EVENT_DATA_DESCRIPTOR dataDescr[2] = {{}};
+        dataDescr[0].Ptr = reinterpret_cast<ULONGLONG>(&envelope);
+        dataDescr[0].Size = sizeof(envelope);
+        dataDescr[1].Ptr = reinterpret_cast<ULONGLONG>(manifest);
+        dataDescr[1].Size = sizeof(manifest) - 1;
+
+        ULONG ret = EventWrite({1}Handle, &eventDescr, ARRAYSIZE(dataDescr), dataDescr);
+#ifndef NDEBUG
+        if (ret != ERROR_SUCCESS)
+        {{
+            __debugbreak();
+        }}
+#endif
     }}
+
+private:
+
+    #pragma pack(push, 1)
+    struct ManifestEnvelope
+    {{
+        uint8_t Format;
+        uint8_t MajorVersion;
+        uint8_t MinorVersion;
+        uint8_t Magic;
+        uint16_t TotalChunks;
+        uint16_t ChunkNumber;
+
+        static const uint16_t MaxChunkSize = 0xFF00;
+    }};
+    #pragma pack(pop)
+
+    bool m_delayedEventWrite;
 }};
 
 __declspec(selectany) {0}Base {0};
-",
-            m_filename,
-            m_safeProviderName,
-            eventMethods
+
+inline void EventCallback{1}(
+    _In_ const GUID* /*SourceId*/,
+    _In_ ULONG ControlCode,
+    _In_ UCHAR /*Level*/,
+    _In_ ULONGLONG /*MatchAnyKeyword*/,
+    _In_ ULONGLONG /*MatchAllKeyword*/,
+    _In_opt_ _EVENT_FILTER_DESCRIPTOR* /*FilterData*/,
+    _Inout_opt_ PVOID /*CallbackContext*/
+    )
+{{
+    if (ControlCode == EVENT_CONTROL_CODE_ENABLE_PROVIDER)
+    {{
+        // The callback may be called during the call to EventRegisterXxx(), in which
+        // case the handle is not set yet. Manifest will be sent at the end of the
+        // constructor after EventRegister{1}() completes
+        if ({1}Handle != 0)
+        {{
+            {0}.EventWriteManifest();
+        }}
+        else
+        {{
+            {0}.EventDelayedWriteManifest();
+        }}
+    }}
+
+    if (ControlCode == EVENT_CONTROL_CODE_DISABLE_PROVIDER)
+    {{
+        {0}.EventWriteManifest();
+    }}
+}}",
+            m_filename,         // {0} ex: 'EtwLogger'
+            m_safeProviderName, // {1} ex: 'MMaitre_TraceEtw'
+            eventMethods,       // {2}
+            input.Guid,         // {3} ex: '{d7bcc40a-0866-52c3-aade-b3c8d32fd38e}'
+            xmlManifest         // {4}
             );
 
             File.WriteAllText(OutputDir + m_filename + ".h", manifest.ToString(), Encoding.UTF8);

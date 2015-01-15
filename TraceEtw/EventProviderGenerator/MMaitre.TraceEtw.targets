@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- Import MSBuild Community Tasks -->
-  <PropertyGroup>
-    <MSBuildCommunityTasksPath>$(SolutionDir)\.build</MSBuildCommunityTasksPath>
-  </PropertyGroup>
-  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
-
   <!-- Define the EventProvider content type -->
   <ItemGroup>
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)EventProvider.xml" />
@@ -22,8 +16,8 @@
   </PropertyGroup>
 
   <!-- Load the EventProviderGenerator assembly -->
-  <UsingTask TaskName="EventProviderGenerator.GenerateEventProvider"
-             AssemblyFile="$(MSBuildThisFileDirectory)EventProviderGenerator.dll"/>
+  <UsingTask TaskName="EventProviderGenerator.GenerateEventProvider" AssemblyFile="$(MSBuildThisFileDirectory)EventProviderGenerator.dll"/>
+  <UsingTask TaskName="EventProviderGenerator.TemplateFile" AssemblyFile="$(MSBuildThisFileDirectory)EventProviderGenerator.dll"/>
 
   <!--
   Define targets:
@@ -60,7 +54,7 @@
     <!-- Generate scripts from templates -->
     <TemplateFile Template="$(MSBuildThisFileDirectory)Register.cmd.template" OutputFilename="$(OutDir)Register%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
     <TemplateFile Template="$(MSBuildThisFileDirectory)Unregister.cmd.template" OutputFilename="$(OutDir)Unregister%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
-    <TemplateFile Template="$(MSBuildThisFileDirectory)Trace.cmd.template" OutputFilename="$(OutDir)Trace%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
+    <TemplateFile Template="$(MSBuildThisFileDirectory)Record.cmd.template" OutputFilename="$(OutDir)Record%(EventProvider.Filename).cmd" Tokens="@(Tokens)" />
     <TemplateFile Template="$(MSBuildThisFileDirectory)Record.wprp.template" OutputFilename="$(OutDir)%(EventProvider.Filename).wprp" Tokens="@(Tokens)" />
   </Target>
 

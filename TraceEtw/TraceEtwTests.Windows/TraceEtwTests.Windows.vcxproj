@@ -249,9 +249,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
     <None Include="TraceEtwTests.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -270,17 +268,17 @@
   </ItemGroup>
   <PropertyGroup>
     <_DefineDefaultConvergedProjectType>False</_DefineDefaultConvergedProjectType>
-    <NuGetPackageImportStamp>1b85c054</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>eec75880</NuGetPackageImportStamp>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\MMaitre.TraceEtw.1.0.13\build\native\MMaitre.TraceEtw.targets" Condition="Exists('..\packages\MMaitre.TraceEtw.1.0.13\build\native\MMaitre.TraceEtw.targets')" />
+    <Import Project="..\packages\MMaitre.TraceEtw.1.0.14\build\native\MMaitre.TraceEtw.targets" Condition="Exists('..\packages\MMaitre.TraceEtw.1.0.14\build\native\MMaitre.TraceEtw.targets')" />
   </ImportGroup>
   <Import Project="$(VCInstallDir)\..\Common7\IDE\CommonExtensions\Microsoft\TestWindow\Microsoft.TestTools.Cpp.targets" Condition="Exists('$(VCInstallDir)\..\Common7\IDE\CommonExtensions\Microsoft\TestWindow\Microsoft.TestTools.Cpp.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MMaitre.TraceEtw.1.0.13\build\native\MMaitre.TraceEtw.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MMaitre.TraceEtw.1.0.13\build\native\MMaitre.TraceEtw.targets'))" />
+    <Error Condition="!Exists('..\packages\MMaitre.TraceEtw.1.0.14\build\native\MMaitre.TraceEtw.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MMaitre.TraceEtw.1.0.14\build\native\MMaitre.TraceEtw.targets'))" />
   </Target>
 </Project>

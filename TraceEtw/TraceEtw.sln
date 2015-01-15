@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{943DB1
 		.build\MSBuild.Community.Tasks.targets = .build\MSBuild.Community.Tasks.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventProviderGeneratorTests", "EventProviderGeneratorTests\EventProviderGeneratorTests.csproj", "{3D3A223B-7044-4364-92A2-1ADFF8AA0209}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Diagnostics\Diagnostics.Shared\Diagnostics.Shared.vcxitems*{d56153d8-3d43-4518-8faf-7d9973e6f1fa}*SharedItemsImports = 9
@@ -198,6 +200,22 @@ Global
 		{BBBF31C9-D513-4DF2-B03F-50705D8015EA}.Release|x86.ActiveCfg = Release|x86
 		{BBBF31C9-D513-4DF2-B03F-50705D8015EA}.Release|x86.Build.0 = Release|x86
 		{BBBF31C9-D513-4DF2-B03F-50705D8015EA}.Release|x86.Deploy.0 = Release|x86
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Release|ARM.ActiveCfg = Release|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Release|Win32.ActiveCfg = Release|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Release|x64.ActiveCfg = Release|Any CPU
+		{3D3A223B-7044-4364-92A2-1ADFF8AA0209}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

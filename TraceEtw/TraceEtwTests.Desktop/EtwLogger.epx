@@ -3,7 +3,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="http://mmaitre314.github.io/EventProvider.xsd"
   Name="MMaitre-TraceEtw" 
-  Guid="{A006BF16-179A-4BDF-A0A2-917AC6CA98D6}"
   >
   
   <Event Name="Trace" Level="Verbose">
@@ -27,12 +26,12 @@
   <Event Name="TraceVarArgsAnsi">
     <VarArgs Type="AnsiString" Name="Message" />
   </Event>
-
+  
   <Event Name="TraceVarArgsUnicode">
     <VarArgs Type="UnicodeString" Name="Message" />
   </Event>
 
-  <Event Name="Marker" />
+  <Event Name="Marker2" />
 
   <Task Name="MarkerOp" >
     <Start />

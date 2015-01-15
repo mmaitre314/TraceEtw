@@ -5,7 +5,7 @@
       <BufferSize Value="1024" />
       <Buffers Value="200" />
     </EventCollector>
-    <EventProvider Id="${filename}" Name="${providerName}" />
+    <EventProvider Id="${filename}" Name="*${providerName}" />
 
     <Profile Id="${filename}.Verbose.File" Name="${filename}" Description="${providerName}" LoggingMode="File" DetailLevel="Verbose">
       <Collectors>

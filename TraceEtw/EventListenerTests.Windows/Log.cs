@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EventListenerTests.Windows
 {
-    [EventSource(Name = "Company-Product-Component")]
+    [EventSource(Name = "MMaitre-TraceEtw")]
     sealed class Log : EventSource
     {
         public static Log Events = new Log();

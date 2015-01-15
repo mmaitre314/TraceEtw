@@ -49,19 +49,26 @@
     </Compile>
     <Compile Include="GenerateEventProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TemplateFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EventProvider.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="GenerateEventProvider.cmd" />
-    <None Include="MMaitre.TraceEtw.nuspec" />
-    <None Include="MMaitre.TraceEtw.targets" />
+    <None Include="MMaitre.TraceEtw.nuspec">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="MMaitre.TraceEtw.targets">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="pack.cmd" />
     <None Include="publish.cmd" />
-    <None Include="Record.wprp.template" />
+    <None Include="Record.wprp.template">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Register.cmd.template" />
-    <None Include="Trace.cmd.template" />
+    <None Include="Record.cmd.template" />
     <None Include="Unregister.cmd.template" />
   </ItemGroup>
   <ItemGroup>
