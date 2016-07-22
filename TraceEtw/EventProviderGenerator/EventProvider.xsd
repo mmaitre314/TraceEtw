@@ -50,6 +50,25 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="ChannelType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Admin" />
+      <xs:enumeration value="Operational" />
+      <xs:enumeration value="Analytic" />
+      <xs:enumeration value="Debug" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="HexInt8Type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="0[xX][0-9A-Fa-f]{1,2}" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="UInt8Type">
+    <xs:union memberTypes="xs:unsignedByte HexInt8Type" />
+  </xs:simpleType>
+
   <xs:complexType name="Arg">
     <xs:attribute name="Type" type="Type" use="required"/>
     <xs:attribute name="Name" type="xs:string" use="required"/>
@@ -105,6 +124,23 @@
             </xs:sequence>
             <xs:attribute name="Name" type="xs:string" use="required"/>
             <xs:attribute name="Level" type="Level" use="optional" default="Informational"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Channel" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="Id" type="xs:token" use="required"/>
+            <xs:attribute name="Name" type="xs:string" use="required"/>
+            <xs:attribute name="Type" type="ChannelType" use="optional"/>
+            <xs:attribute name="Enabled" type="xs:boolean" use="optional" default="false"/>
+            <xs:attribute name="Message" type="xs:string" use="optional"/>
+            <xs:attribute name="Value" type="xs:int" use="optional">
+              <xs:annotation>
+                <xs:documentation>
+                  A numeric identifier that uniquely identifies the channel within the list of channels that the provider defines. The message compiler assigns the value if not specified.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
           </xs:complexType>
         </xs:element>
 
