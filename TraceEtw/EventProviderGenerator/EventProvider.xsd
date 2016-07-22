@@ -93,6 +93,8 @@
             </xs:choice>
             <xs:attribute name="Name" type="xs:string" use="required"/>
             <xs:attribute name="Level" type="Level" use="optional" default="Informational"/>
+            <xs:attribute name="Channel" type="xs:token" use="optional"/>
+            <xs:attribute name="Message" type="xs:string" use="optional"/>
           </xs:complexType>
         </xs:element>
 

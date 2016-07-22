@@ -346,6 +346,10 @@ public partial class EventProviderEvent {
     
     private Level levelField;
     
+    private string channelField;
+    
+    private string messageField;
+    
     public EventProviderEvent() {
         this.levelField = Level.Informational;
     }
@@ -382,6 +386,28 @@ public partial class EventProviderEvent {
         }
         set {
             this.levelField = value;
+        }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlAttributeAttribute(DataType="token")]
+    public string Channel {
+        get {
+            return this.channelField;
+        }
+        set {
+            this.channelField = value;
+        }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlAttributeAttribute()]
+    public string Message {
+        get {
+            return this.messageField;
+        }
+        set {
+            this.messageField = value;
         }
     }
 }
