@@ -112,26 +112,41 @@ namespace EventProviderGenerator
         {
             var events = new StringBuilder();
             var tasks = new StringBuilder();
+            var channels = new StringBuilder();
+            var localizations = new Dictionary<string,string>();
             var templates = new StringBuilder();
 
             int eventId = 1;
             int taskId = 1;
+            int channelId = 16; // Channel user values must be in the range from 16 through 255
 
             foreach (var item in input.Items)
             {
                 var e = item as EventProviderEvent;
                 var t = item as EventProviderTask;
+                var c = item as EventProviderChannel;
                 if (e != null)
                 {
                     var templateId = HandleEventArgs(templates, eventId, e.Items);
 
+                    var symbolName = $"{m_safeProviderName}_{e.Name}";
+                    var localizationName = $"{symbolName}_message";
+                    var messageAttr = "";
+                    if (e.Message != null)
+                    {
+                        localizations.Add(localizationName, e.Message);
+                        messageAttr = $@"message=""$(string.{localizationName})""";
+                    }
+
                     events.AppendFormat(@"
-          <event value=""{0}"" symbol=""{4}_{1}"" task=""{1}"" opcode=""win:Info"" level=""win:{2}"" {3}/>",
+          <event value=""{0}"" symbol=""{4}_{1}"" task=""{1}"" opcode=""win:Info"" level=""win:{2}"" {3}{5}{6}/>",
                         eventId,
                         e.Name,
                         e.Level,
                         templateId == null ? "" : @"template=""" + templateId + @""" ",
-                        m_safeProviderName
+                        m_safeProviderName,
+                        e.Channel == null ? "" : @"channel=""" + e.Channel + @""" ",
+                        messageAttr
                         );
                     eventId++;
 
@@ -175,10 +190,28 @@ namespace EventProviderGenerator
                         );
                     taskId++;
                 }
+                else if (c != null)
+                {
+                    var symbolName = $"{m_safeProviderName}_{c.Id}";
+                    var localizationName = $"{symbolName}_message";
+                    localizations.Add(localizationName, c.Message);
+
+                    channels.AppendFormat($@"
+          <channel value=""{channelId}"" chid=""{c.Id}"" name=""{c.Name}"" symbol=""{symbolName}"" type=""{c.Type}"" enabled=""{c.Enabled.ToString().ToLowerInvariant()}"" message=""$(string.{localizationName})"" />");
+
+                    channelId++;
+                }
                 else
                 {
                     throw new InvalidDataException(System.String.Format("Invalid event type: {0}", item.GetType()));
                 }
+            }
+
+            var stringTable = new StringBuilder();
+            foreach (var loc in localizations)
+            {
+                stringTable.AppendFormat($@"
+        <string id=""{loc.Key}"" value=""{loc.Value}"" />");
             }
 
             var manifest = new StringBuilder();
@@ -198,6 +231,8 @@ namespace EventProviderGenerator
         resourceFileName=""placeholder.dll""
         messageFileName=""placeholder.dll""
         >
+        <channels>{6}
+        </channels>
         <tasks>{3}
         </tasks>
         <templates>{4}
@@ -207,13 +242,21 @@ namespace EventProviderGenerator
       </provider>
     </events>
   </instrumentation>
+  <localization>
+    <resources culture=""en-US"">
+      <stringTable>{7}
+      </stringTable>
+    </resources>
+  </localization>
 </instrumentationManifest>",
             input.Name,
             m_safeProviderName,
             input.Guid,
             tasks,
             templates,
-            events
+            events,
+            channels,
+            stringTable
             );
 
             var xmlManifest = manifest.ToString();
@@ -336,6 +379,7 @@ namespace EventProviderGenerator
             {
                 var e = item as EventProviderEvent;
                 var t = item as EventProviderTask;
+                var c = item as EventProviderChannel;
                 if (e != null)
                 {
                     HandleEventMethods(eventMethods, e.Name, m_safeProviderName + "_" + e.Name, e.Items);
@@ -344,6 +388,10 @@ namespace EventProviderGenerator
                 {
                     HandleEventMethods(eventMethods, t.Name + "Start", m_safeProviderName + "_" + t.Name + "_Start", t.Start);
                     HandleEventMethods(eventMethods, t.Name + "Stop", m_safeProviderName + "_" + t.Name + "_Stop", t.Stop);
+                }
+                else if (c != null)
+                {
+                    // noop
                 }
                 else
                 {
@@ -408,7 +456,7 @@ public:
     void EventWriteManifest()
     {{
         static const char manifest[] =
-            R""({4})"";
+            R""manifest({4})manifest"";
 
         // Currently a single chunk supported
         static_assert(sizeof(manifest) < ManifestEnvelope::MaxChunkSize, ""Only one manifest chunk currently supported"");
