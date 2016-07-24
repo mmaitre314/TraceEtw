@@ -1,0 +1,28 @@
+#
+# TraceEtw project AppVeyor build configuration
+#
+
+version: 1.0.{build}
+
+branches:
+  except:
+    - gh-pages
+
+os: Visual Studio 2015
+
+configuration:
+  - Release
+  - Debug
+
+before_build:
+  - cmd: set BUILDCONFIGURATION=%CONFIGURATION%
+  - cmd: nuget restore TraceEtw\TraceEtw.sln
+
+build:
+  project: TraceEtw\Build.proj
+  verbosity: detailed
+
+test: off
+
+cache:
+  - TraceEtw\packages -> **\packages.config
