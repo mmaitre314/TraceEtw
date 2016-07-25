@@ -16,11 +16,15 @@ configuration:
 
 before_build:
   - cmd: set BUILDCONFIGURATION=%CONFIGURATION%
+  - cmd: set BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
   - cmd: nuget restore TraceEtw\TraceEtw.sln
 
 build:
   project: TraceEtw\Build.proj
   verbosity: detailed
+
+artifacts:
+  - path: 'TraceEtw\artifacts\*.nupkg'
 
 test: off
 

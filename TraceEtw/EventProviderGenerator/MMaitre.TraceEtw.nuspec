@@ -3,7 +3,7 @@
   <metadata>
     <id>MMaitre.TraceEtw</id>
     <title>ETW Tracing</title>
-    <version>$NuGetVersion$</version>
+    <version>$version$</version>
     <authors>Matthieu Maitre</authors>
     <owners>Matthieu Maitre</owners>
     <licenseUrl>https://raw.githubusercontent.com/mmaitre314/TraceEtw/master/LICENSE</licenseUrl>
@@ -22,6 +22,6 @@
     <file src="Unregister.cmd.template" target="build\native\" />
     <file src="Record.cmd.template" target="build\native\" />
     <file src="Record.wprp.template" target="build\native\" />
-    <file src="bin\Release\EventProviderGenerator.dll" target="build\native\" />
+    <file src="bin\$Configuration$\EventProviderGenerator.dll" target="build\native\" />
   </files>
 </package>
