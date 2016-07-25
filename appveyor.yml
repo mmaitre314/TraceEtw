@@ -33,7 +33,9 @@ build:
 artifacts:
   - path: 'TraceEtw\artifacts\*.nupkg'
 
-test: off
+test_script:
+  - vstest.console /logger:Appveyor TraceEtw\EventProviderGeneratorTests\bin\%CONFIGURATION%\EventProviderGeneratorTests.dll
+  - vstest.console /logger:Appveyor TraceEtw\%CONFIGURATION%\TraceEtwTests.Desktop.dll
 
 cache:
   - TraceEtw\packages -> **\packages.config
