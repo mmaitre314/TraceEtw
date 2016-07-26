@@ -1,0 +1,41 @@
+#
+# TraceEtw project AppVeyor build configuration
+#
+
+version: 1.0.{build}
+
+branches:
+  except:
+    - gh-pages
+
+os: Visual Studio 2015
+
+configuration:
+  - Release
+  - Debug
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.cs
+  assembly_version: "{version}.0"
+  assembly_file_version: "{version}.0"
+  assembly_informational_version: "{version}.0"
+
+before_build:
+  - cmd: set BUILDCONFIGURATION=%CONFIGURATION%
+  - cmd: set BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
+  - cmd: nuget restore TraceEtw\TraceEtw.sln
+
+build:
+  project: TraceEtw\Build.proj
+  verbosity: detailed
+
+artifacts:
+  - path: 'TraceEtw\artifacts\*.nupkg'
+
+test_script:
+  - vstest.console /logger:Appveyor TraceEtw\EventProviderGeneratorTests\bin\%CONFIGURATION%\EventProviderGeneratorTests.dll
+  - vstest.console /logger:Appveyor TraceEtw\%CONFIGURATION%\TraceEtwTests.Desktop.dll
+
+cache:
+  - TraceEtw\packages -> **\packages.config

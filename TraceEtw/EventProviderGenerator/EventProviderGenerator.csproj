@@ -11,6 +11,10 @@
     <AssemblyName>EventProviderGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PackageOutDir>..\artifacts</PackageOutDir>
+    <NuGetPackTarget>MMaitre.TraceEtw.nuspec</NuGetPackTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +24,7 @@
     <DefineConstants>TRACE;DEBUG;VERBOSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PackAfterBuild>false</PackAfterBuild>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +33,7 @@
     <DefineConstants>TRACE;VERBOSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PackAfterBuild>true</PackAfterBuild>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
@@ -63,6 +69,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="pack.cmd" />
+    <None Include="packages.config" />
     <None Include="publish.cmd" />
     <None Include="Record.wprp.template">
       <SubType>Designer</SubType>
@@ -77,14 +84,28 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)"=="Release" $(ProjectDir)pack.cmd</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Target Name="BeforeBuild" Condition=" $(PackAfterBuild) AND Exists('$(PackageOutDir)') ">
+    <ItemGroup>
+     <OldNuPkgFile Include="$(PackageOutDir)\$(TargetName)*.nupkg" />
+    </ItemGroup>
+    <!-- delete any existing *.nupkg files for the same target output -->
+    <Delete Files="@(OldNuPkgFile)" ContinueOnError="true" />
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="AfterBuild" Condition=" $(PackAfterBuild) ">
+    <!-- Load up the information from the assembly -->
+    <GetAssemblyIdentity AssemblyFiles="$(OutputPath)$(AssemblyName).dll">
+      <Output TaskParameter="Assemblies" ItemName="OutputAssemblyInfo" />
+    </GetAssemblyIdentity>
+    <Message Text="Assembly version: %(OutputAssemblyInfo.Version)" />
+
+    <PropertyGroup>
+      <NuGetPackProperties>id=$(TargetName);version=%(OutputAssemblyInfo.Version);Configuration=$(Configuration);$(NuGetPackProperties)</NuGetPackProperties>
+      <NuGetExe Condition=" '$(NuGetExe)' == '' ">$([System.IO.Path]::GetFullPath(`$(MSBuildThisFileDirectory)..\packages\NuGet.CommandLine.3.4.3\tools\nuget.exe`))</NuGetExe>
+    </PropertyGroup>
+    
+    <MakeDir Directories="$(PackageOutDir)" Condition=" !Exists('$(PackageOutDir)') " />
+    <!-- Package the project -->
+    <Exec WorkingDirectory="$(MSBuildThisFileDirectory)" Command="&quot;$(NuGetExe)&quot; pack &quot;$(NuGetPackTarget)&quot; -Properties &quot;$(NuGetPackProperties)&quot; -OutputDirectory &quot;$(PackageOutDir)&quot; -NoPackageAnalysis -NonInteractive -Verbosity quiet" />
+    <Message Text="$(NuGetPackTarget) -> $(PackageOutDir)\$(AssemblyName).%(OutputAssemblyInfo.Version).nupkg" Importance="high" />
   </Target>
-  -->
 </Project>
