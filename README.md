@@ -100,6 +100,22 @@ if (EtwLogger.IsEnabled())
 
 ```
 
+Defining channels
+---
+
+Windows Event Viewer can be extended with your own log under the *Applications and Services Logs*.
+These logs are called **channels**. A channel is a sink that collects events.
+
+Define your own log using the `Channel` element. You must associate each event with a channel, otherwise
+it won't be collected.
+
+```xml
+<Channel Id="ch1" Name="ChannelSymbolicName" Type="Admin" Enabled="true" Message="Display name of the log" />
+
+<Event Name="Marker" Channel="ch1" Message="Message displayed in Event Viewer logs." />
+```
+
+
 Recording and displaying events
 ---
 
